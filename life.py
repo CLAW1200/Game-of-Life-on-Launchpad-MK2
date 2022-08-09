@@ -6,7 +6,7 @@ import re
 
 #constants for epic gaming
 GRIDSIZE = 8
-SLEEPTIME = 0.1
+SLEEPTIME = 0.4
 
 print (mido.get_output_names())
 print (mido.get_input_names())

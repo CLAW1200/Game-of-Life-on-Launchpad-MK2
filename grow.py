@@ -6,7 +6,7 @@ import re
 
 #constants for epic gaming
 GRIDSIZE = 8
-SLEEPTIME = 0.05
+SLEEPTIME = 0
 
 
 print (mido.get_output_names())
@@ -73,39 +73,45 @@ def gameOfLife(x,y):
     neighbours = check_neighbour(x,y)
 
     if getCoord(x,y) == 1 and neighbours < 2:
-        if random.randint(0,100) < 50:
+        if random.randint(0,100) < 25:
             return 0
         else:
             return 1
 
     if getCoord(x,y) == 1 and neighbours == 2:
-        return 1
+        if random.randint(0,1000) < 999:
+            return 1
+        else:
+            return 0
 
     if getCoord(x,y) == 1 and neighbours == 3:
-        if random.randint(0,100) < 50:
+        if random.randint(0,100) < 30:
             return 0
         else:
             return 1
 
     if getCoord(x,y) == 1 and neighbours > 3:
-        if random.randint(0,100) < 80:
+        if random.randint(0,100) < 90:
             return 0
         else:
             return 1
 
     
     if getCoord(x,y) == 0 and neighbours < 2:
-        return 0
+        if random.randint(0,1000) < 1:
+            return 1
+        else:
+            return 0
 
     if getCoord(x,y) == 0 and neighbours == 2:
-        if random.randint(0,100) < 40:
+        if random.randint(0,100) < 20:
             return 1
         else:
             return 0
 
     
     if getCoord(x,y) == 0 and neighbours > 2:
-        if random.randint(0,100) < 10:
+        if random.randint(0,100) < -1:
             return 1
         else:
             return 0
@@ -132,7 +138,7 @@ def updateGrid():
             setNewCoord(i,j,gameOfLife(i,j))
 
     #if newGrid is all 0s, return False
-    if newGrid == [[0 for x in range(GRIDSIZE)] for y in range(GRIDSIZE)]:
+    if newGrid == "f": #[[0 for x in range(GRIDSIZE)] for y in range(GRIDSIZE)]:
         return False
     else:
         for i in range(GRIDSIZE):
@@ -190,7 +196,7 @@ def extractNoteFromData(inputData):
             return note
 
 def drawingMode():
-    velocity = random.randint(1,127)
+    velocity = 5 #random.randint(1,127)
     clearGrid()
     while True:
         inputData = inPort.receive()
