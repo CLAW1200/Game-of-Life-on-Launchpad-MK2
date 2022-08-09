@@ -4,7 +4,7 @@ import mido
 import re
 
 
-
+#constants for epic gaming
 GRIDSIZE = 8
 SLEEPTIME = 0.1
 
@@ -29,11 +29,13 @@ def noteToCoord(note):
 
 def midiSend(note, state):
     if state == 1:
-        velocity = 3
+        velocity = 5
     else:
-        velocity = 0
-    msg = mido.Message('note_on', note=note, velocity=velocity)
-    outPort.send(msg)
+        velocity = 1
+    
+    if note >= 11 and note <= 88:
+        msg = mido.Message('note_on', note=note, velocity=velocity)
+        outPort.send(msg)
 
 
 #set the grid to all 0s
@@ -93,21 +95,28 @@ def gameOfLife(x,y):
 #update the grid
 def updateGrid():
 
-    newGrid = [[0 for x in range(GRIDSIZE)] for y in range(GRIDSIZE)]
-
     def setNewCoord(x,y,val):
         newGrid[x][y] = val
 
     def getNewCoord(x,y):
         return newGrid[x][y]
 
+    newGrid = [[0 for x in range(GRIDSIZE)] for y in range(GRIDSIZE)]
+
     for i in range(GRIDSIZE):
         for j in range(GRIDSIZE):
             setNewCoord(i,j,gameOfLife(i,j))
 
-    for i in range(GRIDSIZE):
-        for j in range(GRIDSIZE):
-            setCoord(i,j,getNewCoord(i,j))
+    if newGrid == grid:
+        print ("no change")
+        return False
+    
+    if newGrid != grid:  
+        for i in range(GRIDSIZE):
+            for j in range(GRIDSIZE):
+                setCoord(i,j,getNewCoord(i,j))
+        return True
+
 
 #print the grid
 def printGrid():
@@ -130,11 +139,12 @@ def randomizeGrid():
         
 #play the game
 def play():
-    while True:
+    while updateGrid():
         printGrid()
         printLaunchpad()
-        updateGrid()
         time.sleep(SLEEPTIME)
+
+
 
 
 #create an 8x8 grid
@@ -168,16 +178,20 @@ def drawingMode():
         if note == "89":
             break
 
+        if note == "79":
+            randomizeGrid()
+            break
+
         else:
             #print (getCoord(noteToCoord(note)[0], noteToCoord(note)[1]))
             if getCoord(noteToCoord(note)[0], noteToCoord(note)[1]) == 0:
                 setCoord(noteToCoord(note)[0], noteToCoord(note)[1], 1)
-                #printGrid()
+                printGrid()
                 printLaunchpad()
 
             else:
                 setCoord(noteToCoord(note)[0], noteToCoord(note)[1], 0)
-                #printGrid()
+                printGrid()
                 printLaunchpad()
     
     printLaunchpad()
@@ -185,4 +199,6 @@ def drawingMode():
     play()
 
 
-drawingMode()
+if __name__ == "__main__":
+    while True:
+        drawingMode()
