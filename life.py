@@ -7,6 +7,8 @@ import re
 #constants for epic gaming
 GRIDSIZE = 8
 SLEEPTIME = 0.4
+CellOnColour = 3
+CellOffColour = 0
 
 print (mido.get_output_names())
 print (mido.get_input_names())
@@ -29,9 +31,10 @@ def noteToCoord(note):
 
 def midiSend(note, state):
     if state == 1:
-        velocity = 5
+        velocity = CellOnColour
+
     else:
-        velocity = 1
+        velocity = CellOffColour
     
     if note >= 11 and note <= 88:
         msg = mido.Message('note_on', note=note, velocity=velocity)
@@ -40,10 +43,19 @@ def midiSend(note, state):
 
 #set the grid to all 0s
 def clearGrid():
-    for i in range(GRIDSIZE):
-        for j in range(GRIDSIZE):
-            setCoord(i,j,0)
-            midiSend(coordToNote(i,j), 0)
+        for i in range(GRIDSIZE):
+            for j in range(GRIDSIZE):
+                setCoord(i,j,0)
+                midiSend(coordToNote(i,j), 0)
+
+        velocity = CellOffColour
+        for i in range(19,90):
+            msg = mido.Message("note_on", note=i, velocity=velocity)
+            outPort.send(msg)
+        for i in range(104,112):
+            msg = mido.Message("control_change", control=i, value=velocity)
+            outPort.send(msg)
+        
 
 #set a given coordinate to a given value
 def setCoord(x,y,val):
